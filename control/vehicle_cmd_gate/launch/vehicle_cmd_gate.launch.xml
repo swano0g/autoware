@@ -15,6 +15,8 @@
     <remap from="input/auto/hazard_lights_cmd" to="/planning/hazard_lights_cmd"/>
     <remap from="input/auto/gear_cmd" to="/control/shift_decider/gear_cmd"/>
 
+    <remap from="input/backup/control_cmd" to="lkas/control_cmd"/>
+
     <remap from="input/external/control_cmd" to="/external/selected/control_cmd"/>
     <remap from="input/external/turn_indicators_cmd" to="/external/selected/turn_indicators_cmd"/>
     <remap from="input/external/hazard_lights_cmd" to="/external/selected/hazard_lights_cmd"/>

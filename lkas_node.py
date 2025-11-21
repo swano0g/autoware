@@ -54,7 +54,6 @@ class LKASNode(Node):
 
         # For tracking the current vehicle lateral speed
         self.current_longitudinal_speed = 0.0
-
         # Subscriptions
         self.subscription = self.create_subscription(
             Image,
@@ -74,7 +73,7 @@ class LKASNode(Node):
         self.twist_pub = self.create_publisher(
             TwistStamped, '/twist_cmd_lkas', 10)
         self.control_cmd_pub = self.create_publisher(
-            AckermannControlCommand, '/control/command/control_cmd', 10)
+            AckermannControlCommand, '/lkas/control_cmd', 10) # also passes through cmd_gate
         self.pub_original = self.create_publisher(
             Image, '/lkas/debug/original_image', qos_profile_sensor_data)
         self.pub_birdeye = self.create_publisher(
@@ -99,7 +98,6 @@ class LKASNode(Node):
 
     def timer_publish(self):
         self.control_cmd_pub.publish(self.last_cmd)
-
 
     def image_callback(self, msg): 
         try:

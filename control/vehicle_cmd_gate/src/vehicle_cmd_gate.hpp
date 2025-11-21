@@ -90,6 +90,11 @@ struct Commands
   }
 };
 
+enum DriveMode{
+  NORMAL;
+  BACKUP;
+}
+
 class VehicleCmdGate : public rclcpp::Node
 {
 public:
@@ -114,6 +119,7 @@ private:
   rclcpp::Subscription<Heartbeat>::SharedPtr external_emergency_stop_heartbeat_sub_;
   rclcpp::Subscription<GateMode>::SharedPtr gate_mode_sub_;
   rclcpp::Subscription<OperationModeState>::SharedPtr operation_mode_sub_;
+  rclcpp::Subscription< >::SharedPtr drivemode_sub_;                    // *************
   rclcpp::Subscription<MrmState>::SharedPtr mrm_state_sub_;
   rclcpp::Subscription<Odometry>::SharedPtr kinematics_sub_;             // for filter
   rclcpp::Subscription<AccelWithCovarianceStamped>::SharedPtr acc_sub_;  // for filter
@@ -122,6 +128,8 @@ private:
   void onGateMode(GateMode::ConstSharedPtr msg);
   void onExternalEmergencyStopHeartbeat(Heartbeat::ConstSharedPtr msg);
   void onMrmState(MrmState::ConstSharedPtr msg);
+  void onDriveMode( ::ConstSharedPtr msg); //************
+  void onDriveMode
 
   bool is_engaged_;
   bool is_system_emergency_ = false;
@@ -131,6 +139,7 @@ private:
   GateMode current_gate_mode_;
   MrmState current_mrm_state_;
   Odometry current_kinematics_;
+  DriveMode current_drive_mode;
   double current_acceleration_ = 0.0;
   int filter_activated_count_ = 0;
 
@@ -152,6 +161,11 @@ private:
   rclcpp::Subscription<HazardLightsCommand>::SharedPtr auto_hazard_light_cmd_sub_;
   rclcpp::Subscription<GearCommand>::SharedPtr auto_gear_cmd_sub_;
   void onAutoCtrlCmd(AckermannControlCommand::ConstSharedPtr msg);
+
+  // Subscriber for backup
+  Commands backup_commands_;
+  rclcpp::Subscription<AckermannControlCommand>::SharedPtr backup_control_cmd_sub_;
+  void onBackupCtrlCmd(AckermannControlCommand::ConstSharedPtr msg);
 
   // Subscription for external
   Commands remote_commands_;

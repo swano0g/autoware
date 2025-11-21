@@ -32,6 +32,7 @@ namespace vehicle_cmd_gate
 
 namespace
 {
+
 const char * getGateModeName(const GateMode::_data_type & gate_mode)
 {
   if (gate_mode == GateMode::AUTO) {
@@ -105,6 +106,10 @@ VehicleCmdGate::VehicleCmdGate(const rclcpp::NodeOptions & node_options)
     [this](const OperationModeState::SharedPtr msg) { current_operation_mode_ = *msg; });
   mrm_state_sub_ = create_subscription<MrmState>(
     "input/mrm_state", 1, std::bind(&VehicleCmdGate::onMrmState, this, _1));
+  
+  drivemode_sub_ = create_subscription< >( // **********************
+    "input/drive_mode", 1,
+    std::bind(&VehicleCmdGate::&VechicleCmdGate::onDriveMode, this, _1));
 
   // Subscriber for auto
   auto_control_cmd_sub_ = create_subscription<AckermannControlCommand>(
@@ -121,6 +126,10 @@ VehicleCmdGate::VehicleCmdGate(const rclcpp::NodeOptions & node_options)
   auto_gear_cmd_sub_ = create_subscription<GearCommand>(
     "input/auto/gear_cmd", 1,
     [this](GearCommand::ConstSharedPtr msg) { auto_commands_.gear = *msg; });
+
+  // Subscriber for backup
+  backup_control_cmd_sub_ = create_subscription<AckermannControlCommand>(
+    "input/backup/control_cmd", 1, std::bind(&VehicleCmdGate::onBackupCtrlCmd, this, _1));
 
   // Subscriber for external
   remote_control_cmd_sub_ = create_subscription<AckermannControlCommand>(
@@ -207,6 +216,7 @@ VehicleCmdGate::VehicleCmdGate(const rclcpp::NodeOptions & node_options)
   // Set default value
   current_gate_mode_.data = GateMode::AUTO;
   current_operation_mode_.mode = OperationModeState::STOP;
+  current_drive_mode = DriveMode::NORMAL;
 
   // Service
   srv_engage_ = create_service<EngageSrv>(
@@ -280,13 +290,34 @@ bool VehicleCmdGate::isDataReady()
   return true;
 }
 
+void VechicleCmdGate::onDriveMode( ::ConstSharedPtr msg)  // ***************
+{
+  if ( ) {// if drive mode msg is normal
+    current_drive_mode = DriveMode::NORMAL;
+  } else {
+    current_drive_mode = DriveMode::BACKUP;
+  }
+}
+
 // for auto
 void VehicleCmdGate::onAutoCtrlCmd(AckermannControlCommand::ConstSharedPtr msg)
 {
-  auto_commands_.control = *msg;
+  if (current_drive_mode == DriveMode::NORMAL){
+    auto_commands_.control = *msg;
 
-  if (current_gate_mode_.data == GateMode::AUTO) {
-    publishControlCommands(auto_commands_);
+    if (current_gate_mode_.data == GateMode::AUTO) {
+      publishControlCommands(auto_commands_);
+    }
+  }
+}
+
+// for backup
+void VechicleCmdGate::onBackupCtrlCmd(AckermannControlCommand::ConstSharedPtr msg)
+{
+  if (current_drive_mode == DriveMode::BACKUP && current_gate_mode_.data == GateMode::AUTO){
+    backup_commands_.control = *msg;
+
+    publishControlCommands(backup_commands_);
   }
 }
 
