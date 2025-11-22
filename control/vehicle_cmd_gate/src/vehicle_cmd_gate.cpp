@@ -292,7 +292,7 @@ bool VehicleCmdGate::isDataReady()
 
 void VechicleCmdGate::onDriveMode(DriveModeState::ConstSharedPtr msg)  // ***************
 {
-  if ( ) {// if drive mode msg is normal
+  if (msg.data == 0) {// if drive mode msg is normal - it is zero when normal
     current_drive_mode = DriveMode::NORMAL;
   } else {
     current_drive_mode = DriveMode::BACKUP;
