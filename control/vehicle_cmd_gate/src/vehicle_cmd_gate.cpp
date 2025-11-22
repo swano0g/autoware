@@ -107,7 +107,7 @@ VehicleCmdGate::VehicleCmdGate(const rclcpp::NodeOptions & node_options)
   mrm_state_sub_ = create_subscription<MrmState>(
     "input/mrm_state", 1, std::bind(&VehicleCmdGate::onMrmState, this, _1));
   
-  drivemode_sub_ = create_subscription< >( // **********************
+  drivemode_sub_ = create_subscription<DriveModeState>( // **********************
     "input/drive_mode", 1,
     std::bind(&VehicleCmdGate::&VechicleCmdGate::onDriveMode, this, _1));
 
@@ -290,7 +290,7 @@ bool VehicleCmdGate::isDataReady()
   return true;
 }
 
-void VechicleCmdGate::onDriveMode( ::ConstSharedPtr msg)  // ***************
+void VechicleCmdGate::onDriveMode(DriveModeState::ConstSharedPtr msg)  // ***************
 {
   if ( ) {// if drive mode msg is normal
     current_drive_mode = DriveMode::NORMAL;

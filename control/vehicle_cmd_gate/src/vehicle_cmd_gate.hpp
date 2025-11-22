@@ -37,6 +37,7 @@
 #include <geometry_msgs/msg/accel_with_covariance_stamped.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 #include <std_srvs/srv/trigger.hpp>
+#include <std_msgs/msg/bool.hpp> // for handling drivemode
 #include <tier4_control_msgs/msg/gate_mode.hpp>
 #include <tier4_debug_msgs/msg/bool_stamped.hpp>
 #include <tier4_external_api_msgs/msg/emergency.hpp>
@@ -95,6 +96,8 @@ enum DriveMode{
   BACKUP;
 }
 
+typedef std_msgs::msg::Bool DriveModeState;
+
 class VehicleCmdGate : public rclcpp::Node
 {
 public:
@@ -119,7 +122,7 @@ private:
   rclcpp::Subscription<Heartbeat>::SharedPtr external_emergency_stop_heartbeat_sub_;
   rclcpp::Subscription<GateMode>::SharedPtr gate_mode_sub_;
   rclcpp::Subscription<OperationModeState>::SharedPtr operation_mode_sub_;
-  rclcpp::Subscription< >::SharedPtr drivemode_sub_;                    // *************
+  rclcpp::Subscription<DriveModeState>::SharedPtr drivemode_sub_;                    // *************
   rclcpp::Subscription<MrmState>::SharedPtr mrm_state_sub_;
   rclcpp::Subscription<Odometry>::SharedPtr kinematics_sub_;             // for filter
   rclcpp::Subscription<AccelWithCovarianceStamped>::SharedPtr acc_sub_;  // for filter
@@ -128,8 +131,7 @@ private:
   void onGateMode(GateMode::ConstSharedPtr msg);
   void onExternalEmergencyStopHeartbeat(Heartbeat::ConstSharedPtr msg);
   void onMrmState(MrmState::ConstSharedPtr msg);
-  void onDriveMode( ::ConstSharedPtr msg); //************
-  void onDriveMode
+  void onDriveMode(DriveModeState::ConstSharedPtr msg); //************
 
   bool is_engaged_;
   bool is_system_emergency_ = false;

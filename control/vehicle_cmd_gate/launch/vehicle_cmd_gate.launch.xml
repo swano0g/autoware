@@ -17,6 +17,8 @@
 
     <remap from="input/backup/control_cmd" to="lkas/control_cmd"/>
 
+    <remap from="input/drive_mode" to="/backup_mode"/> <!--**************-->
+
     <remap from="input/external/control_cmd" to="/external/selected/control_cmd"/>
     <remap from="input/external/turn_indicators_cmd" to="/external/selected/turn_indicators_cmd"/>
     <remap from="input/external/hazard_lights_cmd" to="/external/selected/hazard_lights_cmd"/>
